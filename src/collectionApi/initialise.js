@@ -4,7 +4,10 @@ import {
   isCollectionRecord,
   isRoot,
   getExactNodeForPath,
+  isGlobalIndex,
+  isSingleRecord
 } from '../templateApi/hierarchy';
+import { initialiseIndex } from '../indexing/initialiseIndex';
 import { $, allTrue, joinKey } from '../common';
 
 const ensureCollectionIsInitialised = async (datastore, node, parentKey) => {
@@ -57,5 +60,43 @@ export const initialiseChildCollections = async (app, recordKey) => {
       child,
       joinKey(recordKey, child.collectionName),
     );
+  }
+};
+
+export const initialiseRootSingleRecords = async (datastore, hierachy) => {
+  const rootSingleRecords = allTrue(
+    n => isRoot(n.parent()),
+    isSingleRecord,
+  );
+
+  const flathierarchy = getFlattenedHierarchy(hierachy);
+
+  const singleRecords = $(flathierarchy, [
+    filter(rootSingleRecords),
+  ]);
+
+  for (let record of singleRecords) {
+    ensureSingleRecordIsInitialised(datastore, record, record.parent().nodeKey())
+  }
+};
+
+
+const ensureSingleRecordIsInitialised = async (datastore, record, parentKey) => {
+  await datastore.createJson(
+    joinKey(
+      parentKey,
+      record.name
+    ),
+  );
+};
+
+export const initialiseRootIndexes = async (datastore, hierarchy) => {
+  const flathierarchy = getFlattenedHierarchy(hierarchy);
+  const globalIndexes = $(flathierarchy, [
+    filter(isGlobalIndex),
+  ]);
+
+  for (const index of globalIndexes) {
+    if (!await datastore.exists(index.nodeKey())) { await initialiseIndex(datastore, '', index); }
   }
 };

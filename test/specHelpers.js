@@ -154,7 +154,6 @@ export const withFields = (hierarchy, templateApi) => {
     
     const newCustomerField = getNewFieldAndAdd(templateApi, customerRecord);
 
-
     const partnersReferenceIndex = templateApi.getNewIndexTemplate(root);
     partnersReferenceIndex.name = "partnersReference";
     partnersReferenceIndex.map = "return {name:record.businessName};";

@@ -51,7 +51,6 @@ describe("hierarchy node creation", () => {
         record.name = "child";
         expect(record.pathRegx()).toBe("/child");
     });
-    
 
     it("> getNewrecordTemplate > should add itself to parent records's children", async () => {
         const {templateApi} = await getMemoryTemplateApi();
