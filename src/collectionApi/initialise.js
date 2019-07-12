@@ -80,13 +80,13 @@ export const initialiseRootSingleRecords = async (datastore, hierachy) => {
   }
 };
 
-
 const ensureSingleRecordIsInitialised = async (datastore, record, parentKey) => {
   await datastore.createJson(
     joinKey(
       parentKey,
       record.name
     ),
+    record
   );
 };
 
